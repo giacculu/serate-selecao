@@ -10,7 +10,12 @@ export default function EventForm({ onCreated }){
   async function create(e){
     e.preventDefault()
     if(!title) return alert('Inserisci un titolo')
-    const { data, error } = await supabase.from('events').insert({ title, date }).select().single()
+    const { data, error } = await supabase.from('events').insert({
+      title, date, max_participants: Number(maxParticipants)||null,
+      min_contribution: Number(minContribution)||0,
+      female_percentage: Number(femalePercentage)||null
+    }).select().single()
+
     if(error){ console.error(error); alert('Errore creando evento') }
     else{
       if(hostName || hostAmount){
@@ -47,6 +52,27 @@ export default function EventForm({ onCreated }){
                className="w-full p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition" 
                placeholder="10.00" />
       </div>
+      <div>
+        <label className="block small mb-1">Massimo partecipanti (opzionale)</label>
+        <input type="number" value={maxParticipants} onChange={e=>setMaxParticipants(e.target.value)}
+               className="w-full p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition"
+               placeholder="Esempio: 20" />
+      </div>
+      
+      <div>
+        <label className="block small mb-1">Contributo minimo (€)</label>
+        <input type="number" step="0.01" value={minContribution} onChange={e=>setMinContribution(e.target.value)}
+               className="w-full p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition"
+               placeholder="Esempio: 5.00" />
+      </div>
+      
+      <div>
+        <label className="block small mb-1">Percentuale solo ragazze (opzionale)</label>
+        <input type="number" step="1" value={femalePercentage} onChange={e=>setFemalePercentage(e.target.value)}
+               className="w-full p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition"
+               placeholder="Esempio: 50" />
+      </div>
+
       <div className="flex justify-end">
         <button type="submit" className="btn-selecao">Crea evento</button>
       </div>
