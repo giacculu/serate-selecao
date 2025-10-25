@@ -15,7 +15,6 @@ export default function App(){
             </div>
             <div>
               <h1 className="text-2xl font-bold">Serate — Seleção</h1>
-              <div className="text-sm text-gray-300">Crea eventi e condividi il link. Tema: Brasil!</div>
             </div>
           </div>
           <div>
