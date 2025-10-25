@@ -55,4 +55,47 @@ export default function EventPage(){
   }
 
   if(loading) return <div>Caricamento...</div>
-  if(!event) return <d
+  if(!event) return <div>Evento non trovato</div>
+
+  const total = (event.participants||[]).reduce((s,p)=> s + Number(p.amount||0), 0)
+
+  const inputClass = "flex-1 p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition"
+
+  return (
+    <div className="card bg-gradient-to-br from-[#009C3B]/10 to-[#FFCC29]/10 p-6 space-y-6">
+      <h2 className="text-2xl font-bold">{event.title}</h2>
+      {event.date && <div className="small">{new Date(event.date).toLocaleString()}</div>}
+
+      <div className="space-y-2">
+        <h3 className="font-semibold text-lg">Partecipanti</h3>
+        <div className="space-y-2">
+          {(event.participants||[]).map(p => (
+            <div key={p.id} className="participant">
+              <div>{p.name} {p.gender==='female'?'♀':'♂'}</div>
+              <div>€{Number(p.amount||0).toFixed(2)}</div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-2 font-bold text-lg">Totale: €{total.toFixed(2)}</div>
+      </div>
+
+      <div className="space-y-3">
+        <h3 className="font-semibold text-lg">Unisciti</h3>
+        <div className="flex flex-col md:flex-row gap-3">
+          <input value={name} onChange={e=>setName(e.target.value)} placeholder="Tuo nome" className={inputClass} />
+          <input value={amount} onChange={e=>setAmount(e.target.value)} placeholder="Importo" className={inputClass} />
+          <select value={gender} onChange={e=>setGender(e.target.value)} className={inputClass}>
+            <option value="">Non specificato</option>
+            <option value="female">Donna</option>
+            <option value="male">Uomo</option>
+          </select>
+          <button onClick={join} className="btn-selecao">Partecipa</button>
+        </div>
+        <div className="small mt-2">Condividi: 
+          <button onClick={()=>{ navigator.clipboard.writeText(window.location.href); alert('Link copiato!') }} 
+                  className="underline ml-2">Copia link</button>
+        </div>
+      </div>
+    </div>
+  )
+}
