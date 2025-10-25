@@ -9,6 +9,7 @@ export default function EventPage(){
 
   const [name, setName] = React.useState('')
   const [amount, setAmount] = React.useState('')
+  const [gender, setGender] = React.useState('')
 
   React.useEffect(()=>{ fetchEvent() }, [id])
 
@@ -27,72 +28,31 @@ export default function EventPage(){
   async function join(){
     if(!name) return alert('Inserisci il tuo nome')
     if(isNaN(Number(amount))) return alert('Importo non valido')
+
+    // massimo partecipanti
     if(event.max_participants && event.participants.length >= event.max_participants){
       return alert(`Spiacente, il numero massimo di partecipanti (${event.max_participants}) è stato raggiunto`)
     }
-    
-    // controlla contributo minimo
+
+    // contributo minimo
     if(Number(amount) < Number(event.min_contribution)){
       return alert(`Il contributo minimo per partecipare è €${event.min_contribution}`)
     }
-    
-    // per la percentuale di sole ragazze, serve indicare sesso del partecipante
+
+    // percentuale solo ragazze
     if(event.female_percentage){
-      const currentFemale = event.participants.filter(p => p.gender==='female').length
-      const total = event.participants.length + 1 // includendo chi si aggiunge
+      const currentFemale = event.participants.filter(p=>p.gender==='female').length
+      const total = event.participants.length + 1
       const femaleRatio = (currentFemale / total) * 100
       if(gender==='male' && femaleRatio > (100 - event.female_percentage)){
-        return alert('Spiacente, questo evento è a percentuale limitata di uomini, trova delle ragazze da aggiungere per arrivare alla percentuale definita')
+        return alert('Spiacente, questo evento è a percentuale limitata di uomini')
       }
     }
 
-    await supabase.from('participants').insert({ event_id: id, name, amount: Number(Number(amount).toFixed(2)) })
-    setName(''); setAmount('')
+    await supabase.from('participants').insert({ event_id: id, name, amount: Number(Number(amount).toFixed(2)), gender })
+    setName(''); setAmount(''); setGender('')
     fetchEvent()
   }
 
   if(loading) return <div>Caricamento...</div>
-  if(!event) return <div>Evento non trovato</div>
-
-  const total = (event.participants||[]).reduce((s,p)=> s + Number(p.amount||0), 0)
-
-  return (
-    <div className="card bg-gradient-to-br from-[#009C3B]/10 to-[#FFCC29]/10 p-6 space-y-6">
-      <h2 className="text-2xl font-bold">{event.title}</h2>
-      {event.date && <div className="small">{new Date(event.date).toLocaleString()}</div>}
-
-      <div className="space-y-2">
-        <h3 className="font-semibold text-lg">Partecipanti</h3>
-        <div className="space-y-2">
-          {(event.participants||[]).map(p => (
-            <div key={p.id} className="participant">
-              <div>{p.name}</div>
-              <div>€{Number(p.amount||0).toFixed(2)}</div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-2 font-bold text-lg">Totale: €{total.toFixed(2)}</div>
-      </div>
-
-      <div className="space-y-3">
-        <h3 className="font-semibold text-lg">Unisciti</h3>
-        <div className="flex flex-col md:flex-row gap-3">
-          <input value={name} onChange={e=>setName(e.target.value)} placeholder="Tuo nome"
-                 className="flex-1 p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition" />
-          <input value={amount} onChange={e=>setAmount(e.target.value)} placeholder="Importo"
-                 className="flex-1 p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition" />
-          <select value={gender} onChange={e=>setGender(e.target.value)} className="rounded-xl p-3 ...">
-            <option value="female">Donna</option>
-            <option value="male">Uomo</option>
-          </select>
-
-          <button onClick={join} className="btn-selecao">Partecipa</button>
-        </div>
-        <div className="small mt-2">Condividi: 
-          <button onClick={()=>{ navigator.clipboard.writeText(window.location.href); alert('Link copiato!') }} 
-                  className="underline ml-2">Copia link</button>
-        </div>
-      </div>
-    </div>
-  )
-}
+  if(!event) return <d
