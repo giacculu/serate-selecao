@@ -28,7 +28,6 @@ export default function App(){
           <Route path="/event/:id" element={<EventPage/>} />
         </Routes>
 
-        <footer className="mt-8 text-sm text-gray-400">Made with 💛 by you — tema Seleção</footer>
       </div>
     </Router>
   )
@@ -56,10 +55,5 @@ function AuthButtons(){
     setSession(null)
   }
 
-  return (
-    <div>
-      <button onClick={signIn} className="mr-2 btn-selecao">Login</button>
-      <button onClick={signOut} className="btn-selecao" style={{opacity:0.9}}>Logout</button>
-    </div>
-  )
+  return ()
 }
