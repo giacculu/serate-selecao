@@ -4,14 +4,18 @@ import { supabase } from '../lib/supabaseClient'
 export default function EventForm({ onCreated }){
   const [title, setTitle] = React.useState('')
   const [date, setDate] = React.useState('')
-  const [hostAmount, setHostAmount] = React.useState('')
   const [hostName, setHostName] = React.useState('')
+  const [hostAmount, setHostAmount] = React.useState('')
+  const [maxParticipants, setMaxParticipants] = React.useState('')
+  const [minContribution, setMinContribution] = React.useState('')
+  const [femalePercentage, setFemalePercentage] = React.useState('')
 
   async function create(e){
     e.preventDefault()
     if(!title) return alert('Inserisci un titolo')
     const { data, error } = await supabase.from('events').insert({
-      title, date, max_participants: Number(maxParticipants)||null,
+      title, date,
+      max_participants: Number(maxParticipants)||null,
       min_contribution: Number(minContribution)||0,
       female_percentage: Number(femalePercentage)||null
     }).select().single()
@@ -19,60 +23,52 @@ export default function EventForm({ onCreated }){
     if(error){ console.error(error); alert('Errore creando evento') }
     else{
       if(hostName || hostAmount){
-        await supabase.from('participants').insert({ event_id: data.id, name: hostName || 'Host', amount: Number(Number(hostAmount||0).toFixed(2)) })
+        await supabase.from('participants').insert({
+          event_id: data.id,
+          name: hostName || 'Host',
+          amount: Number(Number(hostAmount||0).toFixed(2)),
+          gender: null
+        })
       }
-      setTitle(''); setDate(''); setHostAmount(''); setHostName('')
+      setTitle(''); setDate(''); setHostName(''); setHostAmount('')
+      setMaxParticipants(''); setMinContribution(''); setFemalePercentage('')
       onCreated && onCreated()
       alert('Evento creato!')
     }
   }
 
+  const inputClass = "w-full p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition"
+
   return (
     <form onSubmit={create} className="space-y-4">
       <div>
         <label className="block small mb-1">Titolo</label>
-        <input value={title} onChange={e=>setTitle(e.target.value)} 
-               className="w-full p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition" 
-               placeholder="Serata al Club XYZ" />
+        <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Serata al Club XYZ" className={inputClass} />
       </div>
       <div>
         <label className="block small mb-1">Data</label>
-        <input value={date} onChange={e=>setDate(e.target.value)} type="datetime-local" 
-               className="w-full p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition" />
+        <input type="datetime-local" value={date} onChange={e=>setDate(e.target.value)} className={inputClass} />
       </div>
       <div>
         <label className="block small mb-1">Host (opzionale)</label>
-        <input value={hostName} onChange={e=>setHostName(e.target.value)} 
-               className="w-full p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition" 
-               placeholder="Tuo nome" />
+        <input value={hostName} onChange={e=>setHostName(e.target.value)} placeholder="Tuo nome" className={inputClass} />
       </div>
       <div>
         <label className="block small mb-1">Contributo iniziale (€)</label>
-        <input value={hostAmount} onChange={e=>setHostAmount(e.target.value)} type="number" step="0.01" 
-               className="w-full p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition" 
-               placeholder="10.00" />
+        <input type="number" step="0.01" value={hostAmount} onChange={e=>setHostAmount(e.target.value)} placeholder="10.00" className={inputClass} />
       </div>
       <div>
         <label className="block small mb-1">Massimo partecipanti (opzionale)</label>
-        <input type="number" value={maxParticipants} onChange={e=>setMaxParticipants(e.target.value)}
-               className="w-full p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition"
-               placeholder="Esempio: 20" />
+        <input type="number" value={maxParticipants} onChange={e=>setMaxParticipants(e.target.value)} placeholder="20" className={inputClass} />
       </div>
-      
       <div>
         <label className="block small mb-1">Contributo minimo (€)</label>
-        <input type="number" step="0.01" value={minContribution} onChange={e=>setMinContribution(e.target.value)}
-               className="w-full p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition"
-               placeholder="Esempio: 5.00" />
+        <input type="number" step="0.01" value={minContribution} onChange={e=>setMinContribution(e.target.value)} placeholder="5.00" className={inputClass} />
       </div>
-      
       <div>
         <label className="block small mb-1">Percentuale solo ragazze (opzionale)</label>
-        <input type="number" step="1" value={femalePercentage} onChange={e=>setFemalePercentage(e.target.value)}
-               className="w-full p-3 rounded-xl border border-[#009C3B]/40 bg-[#009C3B]/5 placeholder-[#FFCC29]/50 focus:ring-2 focus:ring-[#FFCC29]/50 transition"
-               placeholder="Esempio: 50" />
+        <input type="number" step="1" value={femalePercentage} onChange={e=>setFemalePercentage(e.target.value)} placeholder="50" className={inputClass} />
       </div>
-
       <div className="flex justify-end">
         <button type="submit" className="btn-selecao">Crea evento</button>
       </div>
