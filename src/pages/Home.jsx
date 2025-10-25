@@ -21,7 +21,7 @@ export default function Home(){
   }
 
   function handleDeleted(eventId){
-    fetchEvents(events.filter(ev => ev.id !== eventId))
+    setEvents(events.filter(ev => ev.id !== eventId))
   }
 
 
