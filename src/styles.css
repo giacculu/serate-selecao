@@ -69,7 +69,12 @@ input[type=text], input[type=datetime-local], input[type=number], textarea, sele
 .event-card{
   border-radius:16px; padding:12px; background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
   display:flex; justify-content:space-between; align-items:center;
+  transition: all 0.25s ease-in-out;
 }
+.event-card:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+
 
 /* participants */
 .participant{
