@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  --bg: #002776; /* blue */
+  --accent: #FFCC29; /* yellow */
+  --accent-2: #009C3B; /* green */
+}
+
+body{
+  font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  background: linear-gradient(180deg, #01203a 0%, #001a2b 100%);
+  color: white;
+}
+
+.header-flag{
+  height:48px; display:flex; align-items:center; gap:10px;
+}
+
+.card {
+  background: rgba(255,255,255,0.04);
+  border-radius: 12px; padding:16px;
+}
+
+.btn-selecao{
+  background: linear-gradient(90deg,var(--accent-2),var(--accent));
+  color:#003; padding:8px 12px; border-radius:10px; font-weight:700;
+}
