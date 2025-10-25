@@ -4,6 +4,17 @@ import { Link } from 'react-router-dom'
 export default function EventCard({ ev }){
   const participants = ev.participants || []
   const total = participants.reduce((s,p)=> s + Number(p.amount||0), 0)
+
+  async function handleDelete(){
+    if(!window.confirm("Sei sicuro di voler eliminare questo evento?")) return
+    const { error } = await supabase.from('events').delete().eq('id', ev.id)
+    if(error){ alert('Errore eliminando evento'); console.error(error) }
+    else{
+      // elimina anche partecipanti legati
+      await supabase.from('participants').delete().eq('event_id', ev.id)
+      onDeleted && onDeleted(ev.id)
+    }
+  }
   
   return (
     <div className="event-card p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4
@@ -21,6 +32,7 @@ export default function EventCard({ ev }){
               className="btn-selecao">
           Apri
         </Link>
+        <button onClick={handleDelete} className="btn-ghost text-xs">Elimina</button>
         <button 
           className="btn-ghost text-xs"
           onClick={()=>{ navigator.clipboard.writeText(window.location.origin + '/event/' + ev.id); alert('Link copiato!') }}>
