@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { supabase } from '../lib/supabaseClient'
 
 export default function EventCard({ ev }){
   const participants = ev.participants || []
